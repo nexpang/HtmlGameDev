@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document_03.22</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="960" height="480"></canvas>
+    </div>
+    <button id="startBtn" class="btn">스마일 그리기</button>
+    <input type="color" id="colorPicker">
+    <input type="number" id="lineSeter">
+    <input type="radio" name="mode" id="drawRadio" checked> 그리기
+    <input type="radio" name="mode" id="removeRadio"> 지우기
+
+    <script>
+        let btn = document.querySelector("#startBtn");
+        btn.addEventListener("click", function(){
+            //alert("버튼 클릭");
+            smyile();
+        });
+
+        let canvas = document.querySelector("#gameCanvas");
+        let ctx = canvas.getContext("2d");
+
+        let cp = document.querySelector("#colorPicker");
+        let ls = document.querySelector("#lineSeter");
+        let dR = document.querySelector("#drawRadio");
+        let rR = document.querySelector("#removeRadio");
+
+        let isDown = false;
+        let x = 0;
+        let y = 0;
+        canvas.addEventListener("mousedown",  function(e){
+            isDown = true;
+            x = e.offsetX;
+            y = e.offsetY;
+            console.log(x)
+        });
+        canvas.addEventListener("mouseup",  function(e){
+            isDown = false;
+        });
+        //ctx.clearRect(x,y,5,5);
+        canvas.addEventListener("mousemove",  function(e){
+            if(!isDown)
+                return;
+            if(dR.value == "on"){
+                ctx.strokeStyle = cp.value;
+                ctx.lineCap = "round";
+                ctx.lineWidth = ls.value;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }else if(rR.value == "on"){
+                ctx.clearRect(x, y, ls.value, ls.value);
+            }
+
+            x = e.offsetX;
+            y = e.offsetY;
+        });
+
+
+        function smyile(){
+            ctx.strokeStyle = "rgba(255,0,0,0.5)";
+            ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+            
+            ctx.beginPath();
+            ctx.moveTo(120, 200);
+            ctx.lineTo(180, 130);
+            ctx.lineTo(240, 200);
+            ctx.moveTo(320, 200);
+            ctx.lineTo(380, 130);
+            ctx.lineTo(440, 200);
+
+            ctx.moveTo(200, 250);
+            ctx.lineTo(290, 320);
+            ctx.lineTo(380, 250);
+
+            ctx.closePath();        //끝 점을 시작 점으로 이어줌
+            ctx.stroke();
+            //ctx.fill();
+        }
+
+    </script>
+</body>
+</html>

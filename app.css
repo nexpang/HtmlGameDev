@@ -1,0 +1,22 @@
+#gameCanvas {
+    /*border:1px solid rgb(190, 190, 190);*/
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 3);
+}
+/* code.gondr.net -> 85 */
+#gameContainer{
+    width:100%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn{
+    padding:8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgb(133, 152, 255);
+    color:#ffff;
+    margin-top: 10px;
+}
+.btn:hover{
+    background-color: rgb(79, 88, 143);
+}
