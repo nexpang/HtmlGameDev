@@ -21,6 +21,9 @@ let eWidth = [30, 50, 43];
 let eHeight = [100, 80, 100];
 let eDerection = [1 , 1, 1];
 
+let img = new Image();
+img.src = "/player.png";
+
 let check = [false];
 let rx = 0;
 let ry = 0;
@@ -72,7 +75,8 @@ function update() {
 }
 function render() {
     ctx.clearRect(0, 0, 960, 480);
-    ctx.fillRect(x, y, width, height);
+    //ctx.fillRect(x, y, width, height);
+    ctx.drawImage(img, x, y, width, height);
     for(let i = 0; i< ey.length; i++){
         ctx.fillRect(ex[i], ey[i], eWidth[i], eHeight[i]);
     }
