@@ -29,8 +29,6 @@
 
         let cp = document.querySelector("#colorPicker");
         let ls = document.querySelector("#lineSeter");
-        let dR = document.querySelector("#drawRadio");
-        let rR = document.querySelector("#removeRadio");
 
         let isDown = false;
         let x = 0;
@@ -39,7 +37,6 @@
             isDown = true;
             x = e.offsetX;
             y = e.offsetY;
-            console.log(x)
         });
         canvas.addEventListener("mouseup",  function(e){
             isDown = false;
@@ -48,7 +45,7 @@
         canvas.addEventListener("mousemove",  function(e){
             if(!isDown)
                 return;
-            if(dR.value == "on"){
+            if(document.getElementById('drawRadio').checked){
                 ctx.strokeStyle = cp.value;
                 ctx.lineCap = "round";
                 ctx.lineWidth = ls.value;
@@ -56,8 +53,11 @@
                 ctx.moveTo(x, y);
                 ctx.lineTo(e.offsetX, e.offsetY);
                 ctx.stroke();
-            }else if(rR.value == "on"){
-                ctx.clearRect(x, y, ls.value, ls.value);
+            }else if(document.getElementById('removeRadio').checked){
+                if(ls.value==0){
+                    ls.value = 1;
+                }
+                ctx.clearRect(x, y, ls.value*3, ls.value*3);
             }
 
             x = e.offsetX;
