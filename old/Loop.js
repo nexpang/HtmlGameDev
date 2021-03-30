@@ -18,7 +18,7 @@ let eSpeed = [200, 500, 600]
 let ex = [500, 100, 300];
 let ey = [60, 80, 200];
 let eWidth = [30, 50, 43];
-let eHeight = [100, 80, 100];
+let eHeight = [250, 80, 100];
 let eDerection = [1 , 1, 1];
 
 let img = new Image();

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+    <div class="container">
+        <canvas width="600" height="400" id="gameCanvas"></canvas>
+    </div>
+    <div class="container">
+        <button class="btn" id="gameStart">재시작</button>
+    </div>
+    <script src="/dodge/js/InputSystem.js"></script>
+    <script src="/dodge/js/Vector2.js"></script>
+    <script src="/dodge/js/Player.js"></script>
+    <script src="/dodge/js/Bullet.js"></script>
+    <script src="/dodge/js/App.js"></script>
+
+    <script>
+        //반드시 이 코드를 따라하지 않아도 된다. 자기가 구조를 만들고 싶다면 만들고 싶은 구조대로 만들면 돼.
+        let app = new App("#gameCanvas");
+        let first = false;
+        document.querySelector("#gameStart").addEventListener("click", e => {
+            if(first==false){
+                app.gameStart();
+            }
+            first = true;
+            if(app.gameOver && first== true){
+                app = new App("#gameCanvas");
+                app.gameStart();
+            }
+        });
+    </script>
+</body>
+</html>
