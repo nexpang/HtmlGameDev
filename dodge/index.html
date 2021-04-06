@@ -5,14 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="/dodge/app.css">
 </head>
 <body>
-    <div class="container">
-        <canvas width="600" height="400" id="gameCanvas"></canvas>
+    <div id="popup">
+        <div class="inner">
+            <p id="score"></p>
+            <input class="form-control" type="text" id="nameInput" placeholder="이름"><br>
+            <input class="form-control" type="text" id="msgInput" placeholder="남길말"><br>
+            <button class="btn" id="btnSave">추가하기</button>
+        </div>
     </div>
     <div class="container">
-        <button class="btn" id="gameStart">재시작</button>
+        <canvas width="600" height="400" id="gameCanvas" ></canvas>
+        <div id="gameDiv">
+
+        </div>
+    </div>
+    <div class="container">
+        <button class="btn" id="mainMenu">메인메뉴</button>
+        <button class="btn" id="gameStart">게임시작</button>
     </div>
     <script src="/dodge/js/InputSystem.js"></script>
     <script src="/dodge/js/Vector2.js"></script>
@@ -26,12 +38,46 @@
         let first = false;
         document.querySelector("#gameStart").addEventListener("click", e => {
             if(first==false){
+                app.gameOver = false;
                 app.gameStart();
+                first = true;
             }
-            first = true;
             if(app.gameOver && first== true){
+                app.gameOver = false;
                 app = new App("#gameCanvas");
                 app.gameStart();
+            }
+        });
+        document.querySelector("#mainMenu").addEventListener("click", e => {
+            app.gameOver = true;
+            app.mainMenu();
+            
+        });
+
+        let bsaveBtn = document.querySelector("#btnSave");
+        bsaveBtn.addEventListener("click", function(){
+            if(nameInput.value == "" || msgInput.value == ""){
+                alert("값이 비어있습니다");
+            }else{
+                let stime = app.time;
+                let list = localStorage.getItem("list");
+                
+                if(list == null)
+                    list = [];
+                else
+                    list = JSON.parse(list);
+                
+                let obj = {
+                    name : nameInput.value,
+                    score : (Math.round(stime*100)/100.0),
+                    msg : msgInput.value
+                }
+                list.push(obj);
+                localStorage.setItem("list", JSON.stringify(list));
+                
+                nameInput.value = "";
+                msgInput.value = "";
+                document.querySelector("#popup").classList.remove("on");
             }
         });
     </script>
