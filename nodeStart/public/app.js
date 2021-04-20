@@ -8,10 +8,28 @@ const msgInput = document.querySelector("#msgInput");
 const btnSend = document.querySelector("#btnSend");
 const chatList = document.querySelector("#chatList"); //채팅을 집어넣는거
 
+const popup = document.querySelector("#popup");
+const roomTitleInput = document.querySelector("#roomTitle");
+const roomMaxnumberInput = document.querySelector("#roomMaxnumber");
+
 let nickName = "";
 let socket = null;
 let roomList = []; //채팅방 리스트고
 let userList = []; //해당 채팅방에 있는 유저들의 리스트다
+
+document.querySelector("#btnCreateRoom").addEventListener("click", e => {
+    popup.classList.add("on");
+})
+document.querySelector("#btnCreate").addEventListener("click", e => {
+    let title = roomTitleInput.value;
+    let maxNumber = roomMaxnumberInput.value * 1;
+    if (title.trim() === "") {
+        Swal.fire("방이름은 공백일 수 없습니다");
+        return;
+    }
+    socket.emit("create-room", { title, maxNumber })
+    popup.classList.remove("on");
+})
 
 btnLogin.addEventListener("click", e => {
     let name = loginIdInput.value;
@@ -37,10 +55,15 @@ function socketConnect() {
     });
 
     socket.on("enter-room", data => {
-        userList = data.userList;
+
         lobbyPage.classList.add("left");
         chatPage.classList.remove("right");
-    })
+    });
+
+    socket.on("user-refresh", data => {
+        userList = data.userList;
+        makeUserData(userList);
+    });
 
     socket.on("chat", data => {
         let li = document.createElement("li");
@@ -56,6 +79,11 @@ function socketConnect() {
         chatList.scrollTop = chatList.scrollHeight;
     });
 
+    socket.on("bad-access", data => {
+        Swal.fire(data.msg);
+        return;
+    });
+
     //메시지 전송버튼 눌렀을때
     btnSend.addEventListener("click", e => {
         if (msgInput.value.trim() === "") return;
@@ -64,7 +92,17 @@ function socketConnect() {
         socket.emit("chat", { nickName, msg });
     });
 }
+const userListDom = document.querySelector("#connectionList");
 
+function makeUserData(userList) {
+    userListDom.innerHTML = "";
+
+    userList.forEach(x => {
+        let li = document.createElement("li");
+        li.innerHTML = x.nickName;
+        userListDom.appendChild(li);
+    });
+}
 const roomListDom = document.querySelector("#roomList");
 
 
@@ -88,5 +126,5 @@ function makeRoomData(roomList) {
     });
 }
 
-loginIdInput.value = "테스트";
-document.querySelector("#btnLogin").click();
+// loginIdInput.value = "테스트";
+// document.querySelector("#btnLogin").click();

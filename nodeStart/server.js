@@ -17,8 +17,7 @@ const io = socketio(server); //이렇게하면 서버에 소켓이 붙는다.
 //on은 이벤트를 연결해주는 것으로 addEventListener과 동일
 
 let roomList = [
-    { title: "dummyRoom1", roomNo: 1, num: 1, maxNumber: 4 },
-    { title: "dummyRoom2", roomNo: 2, num: 1, maxNumber: 4 }
+
 ];
 let conSocket = {};
 
@@ -26,14 +25,23 @@ io.on("connection", socket => {
     console.log(`${socket.id} is connected`);
     socket.state = State.IN_LOGIN;
 
-    socket.on("disconnecting", () => {
+    socket.on("disconnecting", async () => {
         console.log(`${socket.id} is disconnected`);
 
-        [...socket.rooms].filter(x => x != socket.id).forEach(r => {
+
+        await [...socket.rooms].filter(x => x != socket.id).forEach(async r => {
             let targetRoom = roomList.find(y => y.roomNo === r);
             targetRoom.num--;
+            if (targetRoom.num === 0) {
+                let idx = roomList.findIndex(x => x.roomNo === r);
+                roomList.splice(idx, 1);
+            } else {
+                let userList = [...await io.in(targetRoom.roomNo).allSockets()];
+                console.log(userList)
+                userList = userList.map(id => ({ id, nickName: conSocket[id].nickName }));
+                io.to(targetRoom.roomNo).emit("user-refresh", { userList });
+            }
         });
-
 
         delete conSocket[socket.id];
     });
@@ -48,7 +56,7 @@ io.on("connection", socket => {
         //console.log(conSocket);
     });
 
-    socket.on("enter-room", data => {
+    socket.on("enter-room", async data => {
         if (socket.state !== State.IN_LOBBY) {
             socket.emit("bad-access", { msg: "잘못된 접근입니다" });
             return;
@@ -66,9 +74,21 @@ io.on("connection", socket => {
 
         socket.join(roomNo); // 방에 들어가짐
 
-        let userList = []; // 해당 방에 존재하는 모든 유저를 넣어준다.
+        let userList = [...await io.in(roomNo).allSockets()];
 
-        socket.emit("enter-room", { userList });
+        // let dataList = []
+        // userList.forEach(x => {
+        //     const id = x;
+        //     const nickName = conSocket[socket.id].nickName;
+        //     dataList.push({ id, nickName })
+        // });
+        // userList = dataList;
+        userList = userList.map(id => ({ id, nickName: conSocket[id].nickName }));
+
+        // let userList = []; // 해당 방에 존재하는 모든 유저를 넣어준다.
+        // Pro
+        socket.emit("enter-room");
+        io.to(roomNo).emit("user-refresh", { userList });
         socket.state = State.IN_CHAT;
         targetRoom.num++;
     });
@@ -86,6 +106,26 @@ io.on("connection", socket => {
             io.to(r).emit("chat", { sender: socket.id, msg, nickName });
         });
     });
+
+    socket.on("create-room", async data => {
+        if (socket.state !== State.IN_LOBBY) {
+            socket.emit("bad-access", { msg: "잘못된 접근입니다." });
+            return;
+        }
+        const { title, maxNumber } = data;
+        const roomNo = 1
+        if (roomList.length > 0) {
+            roomNo = Math.max(...roomList.map(x => x.roomNo)) + 1;
+        }
+
+        roomList.push({ title, roomNo, num: 1, maxNumber });
+        socket.join(roomNo);
+
+        let userList = [{ id: socket.id, nickName: socket.nickName }];
+        socket.state = State.IN_CHAT;
+        socket.emit("enter-room");
+        io.to(roomNo).emit("user-refresh", { userList });
+    })
 });
 
 server.listen(15454, () => {
