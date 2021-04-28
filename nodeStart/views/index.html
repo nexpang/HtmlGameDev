@@ -10,7 +10,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
-
 <body>
     <div id="chatBody">
         <div class="inner-box">
@@ -27,10 +26,7 @@
             <div class="lobby-box">
                 <h1>채팅방 리스트</h1>
                 <ul id="roomList">
-                    <li class="room">
-                        <span class="title">더미룸 제목</span>
-                        <span class="number">1/4</span>
-                    </li>
+                    
                 </ul>
                 <div class="button-row">
                     <button class="btn" id="btnCreateRoom">채팅방 생성</button>
@@ -43,31 +39,35 @@
             <div class="chat-box">
                 <div class="chat-container">
                     <ul id="chatList">
-
+                        
                     </ul>
                     <!-- end of chatList -->
                     <ul id="connectionList">
-                        <!-- 접속자 리스트 -->
+                        <!-- 여기에는 접속자 정보 들어갑니다. -->
                     </ul>
                 </div>
+                
                 <div id="inputBox">
                     <input type="text" id="msgInput" class="form-control">
                     <button id="btnSend">전송</button>
                 </div>
             </div>
             <!-- end of chatBox -->
+
         </div>
     </div>
+
     <div id="popup" class="">
         <div class="inner">
-            <input id="roomTitle" type="text" class="form-control" placeholder="방제목 입력">
-            <input id="roomMaxnumber" type="text" min="1" max="10" value="4" class="form-control" placeholder="인원수 입력">
-            <div id="button-row">
+            <input type="text" class="form-control" placeholder="방제목 입력" id="roomTitle">
+            <input type="number" min="1" max="10" value="4" class="form-control" placeholder="인원수 입력">
+            <div class="button-row">
                 <button id="btnCreate" class="btn">생성</button>
                 <button id="btnCancel" class="btn">취소</button>
             </div>
         </div>
     </div>
+
     <script src="/app.js"></script>
 </body>
 

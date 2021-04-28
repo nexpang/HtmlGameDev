@@ -25,21 +25,20 @@ io.on("connection", socket => {
     console.log(`${socket.id} is connected`);
     socket.state = State.IN_LOGIN;
 
-    socket.on("disconnecting", async () => {
-        console.log(`${socket.id} is disconnected`);
+    socket.on("disconnecting", () => {
+        console.log(`${socket.id} is disconnected`);//소켓 연결 종료
 
-
-        await [...socket.rooms].filter(x => x != socket.id).forEach(async r => {
-            let targetRoom = roomList.find(y => y.roomNo === r);
-            targetRoom.num--;
-            if (targetRoom.num === 0) {
+        let list = [...socket.rooms].filter(x => x !== socket.id);
+        list.forEach(r => {
+            let findRoom = roomList.find(x => x.roomNo === r);
+            findRoom.number--;
+            if (findRoom.number === 0) {
                 let idx = roomList.findIndex(x => x.roomNo === r);
-                roomList.splice(idx, 1);
+                roomList.splice(idx, 1);//해당 룸을 찾아서 삭제한다.
             } else {
-                let userList = [...await io.in(targetRoom.roomNo).allSockets()];
-                console.log(userList)
-                userList = userList.map(id => ({ id, nickName: conSocket[id].nickName }));
-                io.to(targetRoom.roomNo).emit("user-refresh", { userList });
+                socket.leave(r);
+                io.to(r).emit("chat", { sender: socket.id, msg: "님이 나가셨습니다.", nickName: socket.nickName });
+                refreshUserList(r);
             }
         });
 
@@ -127,6 +126,12 @@ io.on("connection", socket => {
         io.to(roomNo).emit("user-refresh", { userList });
     })
 });
+
+async function refreshUserList(roomNo) {
+    let userList = [...await io.in(roomNo).allSockets()]; //해당방에 존재하는 모든 유저가 가져와져;
+    userList = userList.map(id => ({ id, nickName: conSo[id].nickName }));
+    io.to(roomNo).emit("user-refresh", { userList });
+}
 
 server.listen(15454, () => {
     console.log("서버가 15454포트에서 돌아가고 있습니다.");

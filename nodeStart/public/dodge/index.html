@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/dodge/app.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
     <div id="popup">
         <div class="inner">
@@ -17,7 +20,7 @@
         </div>
     </div>
     <div class="container">
-        <canvas width="600" height="400" id="gameCanvas" ></canvas>
+        <canvas width="600" height="400" id="gameCanvas"></canvas>
         <div id="gameDiv">
 
         </div>
@@ -37,12 +40,12 @@
         let app = new App("#gameCanvas");
         let first = false;
         document.querySelector("#gameStart").addEventListener("click", e => {
-            if(first==false){
+            if (first == false) {
                 app.gameOver = false;
                 app.gameStart();
                 first = true;
             }
-            if(app.gameOver && first== true){
+            if (app.gameOver && first == true) {
                 app.gameOver = false;
                 app = new App("#gameCanvas");
                 app.gameStart();
@@ -51,30 +54,35 @@
         document.querySelector("#mainMenu").addEventListener("click", e => {
             app.gameOver = true;
             app.mainMenu();
-            
+
         });
 
         let bsaveBtn = document.querySelector("#btnSave");
-        bsaveBtn.addEventListener("click", function(){
-            if(nameInput.value == "" || msgInput.value == ""){
+        bsaveBtn.addEventListener("click", function () {
+            if (nameInput.value == "" || msgInput.value == "") {
                 alert("값이 비어있습니다");
-            }else{
+            } else {
                 let stime = app.time;
                 let list = localStorage.getItem("list");
-                
-                if(list == null)
+
+                if (list == null)
                     list = [];
                 else
                     list = JSON.parse(list);
-                
+
+                this.socket.emit("savescore", {
+                    name: nameInput.value,
+                    score: (Math.round(stime * 100) / 100.0),
+                    msg: msgInput.value
+                })
                 let obj = {
-                    name : nameInput.value,
-                    score : (Math.round(stime*100)/100.0),
-                    msg : msgInput.value
+                    name: nameInput.value,
+                    score: (Math.round(stime * 100) / 100.0),
+                    msg: msgInput.value
                 }
                 list.push(obj);
                 localStorage.setItem("list", JSON.stringify(list));
-                
+
                 nameInput.value = "";
                 msgInput.value = "";
                 document.querySelector("#popup").classList.remove("on");
@@ -82,4 +90,5 @@
         });
     </script>
 </body>
+
 </html>

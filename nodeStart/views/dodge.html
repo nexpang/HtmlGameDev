@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/dodge/app.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <canvas width="600" height="400" id="gameCanvas"></canvas>
+        <div id="gameDiv">
+
+        </div>
+    </div>
+    <div class="container">
+        <button class="btn" id="mainMenu">메인메뉴</button>
+        <button class="btn" id="gameStart">게임시작</button>
+    </div>
+    <div id="popup">
+        <div class="inner">
+            <p id="score"></p>
+            <input class="form-control" type="text" id="nameInput" placeholder="이름"><br>
+            <input class="form-control" type="text" id="msgInput" placeholder="남길말"><br>
+            <button class="btn" id="btnSave">추가하기</button>
+        </div>
+    </div>
+    <script src="/dodge/js/InputSystem.js"></script>
+    <script src="/dodge/js/Vector2.js"></script>
+    <script src="/dodge/js/Player.js"></script>
+    <script src="/dodge/js/Bullet.js"></script>
+    <script src="/dodge/js/App.js"></script>
+
+    <script>
+        //let socket = new io();
+        //반드시 이 코드를 따라하지 않아도 된다. 자기가 구조를 만들고 싶다면 만들고 싶은 구조대로 만들면 돼.
+        let app = new App("#gameCanvas");
+        let first = false;
+        document.querySelector("#gameStart").addEventListener("click", e => {
+            if (first == false) {
+                app.gameOver = false;
+                app.gameStart();
+                first = true;
+            }
+            if (app.gameOver && first == true) {
+                app.gameOver = false;
+                app = new App("#gameCanvas");
+                app.gameStart();
+            }
+        });
+        document.querySelector("#mainMenu").addEventListener("click", e => {
+            app.gameOver = true;
+            app.mainMenu();
+
+        });
+        app.save();
+        // document.querySelector("#btnSave").addEventListener("click", () => {
+        //     if (nameInput.value == "" || msgInput.value == "") {
+        //         alert("값이 비어있습니다");
+        //     } else {
+        //         let stime = app.time;
+        //         let list = localStorage.getItem("list");
+
+        //         if (list == null)
+        //             list = [];
+        //         else
+        //             list = JSON.parse(list);
+
+        //         socket.emit("savescore", {
+        //             name: nameInput.value,
+        //             score: (Math.round(stime * 100) / 100.0),
+        //             msg: msgInput.value
+        //         })
+
+        //         socket.on("msg", data => {
+        //             alert(data.msg);
+        //         });
+
+        //         let obj = {
+        //             name: nameInput.value,
+        //             score: (Math.round(stime * 100) / 100.0),
+        //             msg: msgInput.value
+        //         }
+        //         list.push(obj);
+        //         localStorage.setItem("list", JSON.stringify(list));
+
+        //         nameInput.value = "";
+        //         msgInput.value = "";
+        //         document.querySelector("#popup").classList.remove("on");
+        //     }
+        // });
+    </script>
+</body>
+
+</html>
