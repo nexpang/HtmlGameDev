@@ -5,6 +5,7 @@ class App {
         this.init();
         this.debug();
         this.game = new Game();
+        Game.instance = this.game;
     }
 
     init() {
@@ -15,7 +16,10 @@ class App {
         document.querySelector("#btnStart").onclick = e => {
             this.game.start();
         }
-
+        document.querySelector("#btnStart").addEventListener("keydown", e => {
+            e.preventDefault();
+            return false;
+        })
     }
 
     debug() {
