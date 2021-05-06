@@ -48,15 +48,27 @@ export class Game {
             this.currentTime = 0;
             this.player.moveDown();
         }
-        this.time -= this.difficult * 500;
+        if (this.time > 500) {
+            this.time = 2000 - this.difficult * 150;
+        }
+        else {
+            this.time = 500;
+        }
+        if (JSON.parse(localStorage.getItem('highScore')) < (this.difficult * 100)) {
+            localStorage.setItem('highScore', JSON.stringify((this.difficult * 100)));
+        }
     }
     render() {
+        const info = document.getElementById("info");
+        info.innerHTML = `<p>최고점수 : ${localStorage.getItem('highScore')}<br>현재 점수 : ${this.difficult * 100}</p>`
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        console.log(this.difficult * 500);
         this.arr.forEach(row => row.forEach(item => item.render(this.ctx)));
     }
 
     start() {
+        if (JSON.parse(localStorage.getItem('highScore')) < (this.difficult * 100)) {
+            localStorage.setItem('highScore', JSON.stringify((this.difficult * 100)));
+        }
         if (this.frame != null) {
             clearInterval(this.frame);
         }
@@ -75,6 +87,7 @@ export class Game {
 
         this.player = new Player();
         this.time = 2000;
+        this.difficult = 0;
         //this.debug();
     }
     checkLine() {
@@ -88,13 +101,13 @@ export class Game {
             }
 
             if (full) {
-                this.difficult++;
                 this.lineRemove(i);
                 i++;
             }
         }
     }
     lineRemove(from) {
+        this.difficult++;
         for (let i = from; i >= 1; i--) {
             for (let j = 0; j < this.arr[i].length; j++) {
                 this.arr[i][j].copyBlockData(this.arr[i - 1][j]);
