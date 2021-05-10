@@ -24,11 +24,22 @@
             <div id="gamePage" class="page">
                 <h2>게임페이지</h2>
                 <div class="game-container">
+                    <div id="gameOverBox">
+                        <h2>Game Over</h2>
+                    </div>
                     <div class="game-box">
                         <canvas id="gameCanvas" width="354" height="704"></canvas>
                     </div>
-                    <div id="info" class="info-box">
-                        다양한 정보!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    <div class="info-box">
+                        <div class="row-box">
+                            <div class="next-block">
+                                <canvas id="nextCanvas" width="100" height="100"></canvas>
+                            </div>
+                            <div id="info" class="score-box">
+                                최고점수 : 0<br>
+                                현재 점수 : 0
+                            </div>
+                        </div>
                         <button id="btnStart">게임시작</button>
                     </div>
                 </div>

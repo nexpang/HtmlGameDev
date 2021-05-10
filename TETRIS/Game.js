@@ -15,11 +15,22 @@ export class Game {
         this.time = 2000;
         this.currentTime = 0;
         this.difficult = 0;
+
+        this.gameOverPanel = document.querySelector("#gameOverBox");
+        this.gameOver = false;
+    }
+
+    setGameOver() {
+        this.gameOver = true;
+        clearInterval(this.frame);
+
+        this.gameOverPanel.classList.add("on");
+        this.render();
     }
 
     addKeyEvent() {
         document.addEventListener("keydown", e => {
-            if (this.player == null)
+            if (this.player == null || this.gameOver)
                 return;
 
             if (e.keyCode == 37) {
@@ -48,21 +59,17 @@ export class Game {
             this.currentTime = 0;
             this.player.moveDown();
         }
-        if (this.time > 500) {
-            this.time = 2000 - this.difficult * 150;
-        }
-        else {
-            this.time = 500;
-        }
         if (JSON.parse(localStorage.getItem('highScore')) < (this.difficult * 100)) {
             localStorage.setItem('highScore', JSON.stringify((this.difficult * 100)));
         }
     }
     render() {
         const info = document.getElementById("info");
-        info.innerHTML = `<p>최고점수 : ${localStorage.getItem('highScore')}<br>현재 점수 : ${this.difficult * 100}</p>`
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.arr.forEach(row => row.forEach(item => item.render(this.ctx)));
+        info.innerHTML = `최고점수 : ${localStorage.getItem('highScore')}<br>현재 점수 : ${this.difficult * 100}`
+
+        this.player.render(this.ctx);
     }
 
     start() {
@@ -76,6 +83,8 @@ export class Game {
             this.update();
             this.render();
         }, 1000 / 30);
+        this.gameOver = false;
+        this.gameOverPanel.classList.remove("on");
         this.arr = [];
         for (let i = 0; i < 20; i++) {
             let row = [];
@@ -103,11 +112,19 @@ export class Game {
             if (full) {
                 this.lineRemove(i);
                 i++;
+                this.addScore();
             }
         }
     }
-    lineRemove(from) {
+    addScore() {
         this.difficult++;
+        if (this.difficult % 5 == 0 && this.time > 500) {
+            this.time -= 300;
+            if (this.time <= 100)
+                this.time = 100;
+        }
+    }
+    lineRemove(from) {
         for (let i = from; i >= 1; i--) {
             for (let j = 0; j < this.arr[i].length; j++) {
                 this.arr[i][j].copyBlockData(this.arr[i - 1][j]);
